@@ -48,7 +48,7 @@ class HouseEntityServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     streetEntity = new StreetEntity();
     streetEntity.setId(1L);

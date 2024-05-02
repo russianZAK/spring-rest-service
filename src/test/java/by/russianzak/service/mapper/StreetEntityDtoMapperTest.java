@@ -22,6 +22,7 @@ import org.mapstruct.factory.Mappers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class StreetEntityDtoMapperTest {
 
@@ -59,6 +60,13 @@ class StreetEntityDtoMapperTest {
     assertEquals(roadSurfaceDto.getType(), roadSurfaceEntity.getType());
     assertEquals(roadSurfaceDto.getDescription(), roadSurfaceEntity.getDescription());
     assertEquals(roadSurfaceDto.getFrictionCoefficient(), roadSurfaceEntity.getFrictionCoefficient());
+  }
+
+  @Test
+  void testMapNullRequestDtoToEntity() {
+    StreetEntity streetEntity = mapper.map((RequestStreetEntityDto) null);
+
+    assertNull(streetEntity);
   }
 
   @Test
@@ -102,5 +110,12 @@ class StreetEntityDtoMapperTest {
     assertEquals(roadSurfaceEntity.getType(), roadSurfaceDto.getType());
     assertEquals(roadSurfaceEntity.getDescription(), roadSurfaceDto.getDescription());
     assertEquals(roadSurfaceEntity.getFrictionCoefficient(), roadSurfaceDto.getFrictionCoefficient());
+  }
+
+  @Test
+  void testMapNullEntityToResponseDto() {
+    ResponseStreetEntityDto responseDto = mapper.map((StreetEntity) null);
+
+    assertNull(responseDto);
   }
 }

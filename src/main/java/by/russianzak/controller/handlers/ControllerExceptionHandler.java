@@ -44,7 +44,7 @@ public class ControllerExceptionHandler {
   }
 
   @ExceptionHandler(UnknownHttpStatusCodeException.class)
-  public ResponseEntity<WebError> handleUnknownHttpStatusCodeException(UnknownHttpStatusCodeException  ex) {
+  public ResponseEntity<WebError> handleUnknownHttpStatusCodeException(UnknownHttpStatusCodeException ex) {
     return new ResponseEntity<>(new WebError(ex.getRawStatusCode(), ex.getMessage()), HttpStatus.NOT_FOUND);
   }
 

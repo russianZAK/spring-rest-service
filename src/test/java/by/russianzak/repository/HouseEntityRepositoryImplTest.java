@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -39,11 +38,6 @@ public class HouseEntityRepositoryImplTest {
     postgreSQLContainer.start();
   }
 
-  @BeforeEach
-  public void setUp() {
-    houseEntityRepository.deleteAll();
-  }
-
   @DynamicPropertySource
   static void setDataSourceProperties(DynamicPropertyRegistry registry) {
     registry.add("datasource.url", postgreSQLContainer::getJdbcUrl);
@@ -60,6 +54,16 @@ public class HouseEntityRepositoryImplTest {
 
     assertEquals("123", savedHouseEntity.getHouseNumber());
     assertEquals("Main Street", savedHouseEntity.getStreet().getName());
+  }
+
+  @Test
+  void testDelete() {
+    HouseEntity houseEntity = HouseEntity.builder().setBuildDate(new Date()).setHouseNumber("123").setType(TypeOfBuilding.COMMERCIAL).setNumFloors(12L).build();
+    houseEntity.setStreet(StreetEntity.builder().setName("Main Street").setPostalCode(345L).build());
+    houseEntityRepository.save(houseEntity);
+
+    houseEntityRepository.delete(houseEntity);
+    assertFalse(houseEntityRepository.findById(houseEntity.getId()).isPresent());
   }
 
   @Test
@@ -82,6 +86,18 @@ public class HouseEntityRepositoryImplTest {
     HouseEntity updatedHouseEntity = houseEntityRepository.update(houseEntity);
 
     assertEquals("456", updatedHouseEntity.getHouseNumber());
+  }
+
+  @Test
+  void testGetById() {
+    HouseEntity houseEntity = HouseEntity.builder().setBuildDate(new Date()).setHouseNumber("123").setType(TypeOfBuilding.COMMERCIAL).setNumFloors(12L).build();
+    houseEntity.setStreet(StreetEntity.builder().setName("Main Street").setPostalCode(345L).build());
+    houseEntityRepository.save(houseEntity);
+
+    Optional<HouseEntity> optionalHouseEntity = houseEntityRepository.findById(houseEntity.getId());
+
+    assertTrue(optionalHouseEntity.isPresent());
+    assertEquals("123", optionalHouseEntity.get().getHouseNumber());
   }
 
   @Test

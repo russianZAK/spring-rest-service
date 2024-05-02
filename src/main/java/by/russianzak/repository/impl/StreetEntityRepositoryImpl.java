@@ -59,8 +59,4 @@ public class StreetEntityRepositoryImpl implements by.russianzak.repository.Stre
   public Optional<StreetEntity> findByNameAndPostalCode(String name, Long postalCode) {
     return streetEntityRepository.findByNameAndPostalCode(name, postalCode);
   }
-
-  public void deleteAll() {
-    streetEntityRepository.deleteAll();
-  }
 }

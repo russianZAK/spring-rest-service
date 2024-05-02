@@ -12,6 +12,7 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class HouseEntityDtoMapperTest {
 
@@ -31,6 +32,26 @@ class HouseEntityDtoMapperTest {
     assertNotNull(houseEntity.getStreet());
     assertEquals("Main St", houseEntity.getStreet().getName());
     assertEquals(12345L, houseEntity.getStreet().getPostalCode());
+  }
+
+  @Test
+  void map_RequestHouseEntityDtoToHouseEntityWithNullStreet() {
+    RequestStreetSlimEntityDto streetDto = null;
+    RequestHouseEntityDto requestDto = new RequestHouseEntityDto("123", new Date(), 2L, "RESIDENTIAL", streetDto);
+
+    HouseEntity houseEntity = mapper.map(requestDto);
+
+    assertNotNull(houseEntity);
+    assertEquals("123", houseEntity.getHouseNumber());
+    assertEquals(2L, houseEntity.getNumFloors());
+    assertEquals("RESIDENTIAL", houseEntity.getType());
+    assertNull(houseEntity.getStreet());
+  }
+
+  @Test
+  void map_NullRequestHouseEntityDtoToHouseEntity() {
+    HouseEntity houseEntity = mapper.map((RequestHouseEntityDto) null);
+    assertNull(houseEntity);
   }
 
   @Test
@@ -61,4 +82,33 @@ class HouseEntityDtoMapperTest {
     assertEquals("Main St", responseDto.getStreet().getName());
     assertEquals(12345L, responseDto.getStreet().getPostalCode());
   }
+
+  @Test
+  void map_HouseEntityToResponseHouseEntityDtoWithNullStreet() {
+
+    HouseEntity houseEntity = new HouseEntity.Builder()
+        .setId(1L)
+        .setHouseNumber("123")
+        .setBuildDate(new Date())
+        .setNumFloors(2L)
+        .setType(HouseEntity.TypeOfBuilding.RESIDENTIAL)
+        .setStreet(null)
+        .build();
+
+    ResponseHouseEntityDto responseDto = mapper.map(houseEntity);
+
+    assertNotNull(responseDto);
+    assertEquals(1L, responseDto.getId());
+    assertEquals("123", responseDto.getHouseNumber());
+    assertEquals(2L, responseDto.getNumFloors());
+    assertEquals("RESIDENTIAL", responseDto.getType());
+    assertNull(responseDto.getStreet());
+  }
+
+  @Test
+  void map_NullHouseEntityToResponseHouseEntityDto() {
+    ResponseHouseEntityDto houseEntity = mapper.map((HouseEntity) null);
+    assertNull(houseEntity);
+  }
+
 }

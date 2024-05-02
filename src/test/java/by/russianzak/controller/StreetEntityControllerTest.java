@@ -33,7 +33,7 @@ class StreetEntityControllerTest {
 
   @BeforeEach
   public void setup() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     mockResponseStreet = new ResponseStreetEntityDto(1L, "Street A", 12345L,
         new HashSet<>(), new HashSet<>());
     mockRequestStreet = new RequestStreetEntityDto("Street A", 12345L,

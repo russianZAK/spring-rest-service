@@ -57,8 +57,4 @@ public class RoadSurfaceEntityRepositoryImpl implements
   public Optional<RoadSurfaceEntity> findByType(TypeOfRoadSurface type) {
     return roadSurfaceEntityRepository.findByType(type);
   }
-
-  public void deleteAll() {
-    roadSurfaceEntityRepository.deleteAll();
-  }
 }

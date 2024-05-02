@@ -51,8 +51,4 @@ public class HouseEntityRepositoryImpl implements HouseEntityRepository {
   public boolean existsByHouseNumberAndStreet(String houseNumber, StreetEntity street) {
     return houseEntityRepositoryJpa.existsByHouseNumberAndStreet(houseNumber, street);
   }
-
-  public void deleteAll() {
-    houseEntityRepositoryJpa.deleteAll();
-  }
 }

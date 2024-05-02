@@ -34,7 +34,7 @@ class RoadSurfaceEntityControllerTest {
 
   @BeforeEach
   public void setup() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     mockResponseRoadSurface = new ResponseRoadSurfaceEntityDto(1L, TypeOfRoadSurface.DIRT.getValue(), "Description A", 0.8,
         new HashSet<>());
     mockRequestRoadSurface = new RequestRoadSurfaceEntityDto(TypeOfRoadSurface.DIRT.getValue(), "Description A", 0.8,

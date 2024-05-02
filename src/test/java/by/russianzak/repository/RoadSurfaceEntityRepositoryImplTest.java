@@ -4,6 +4,7 @@ import by.russianzak.config.DatabaseConfig;
 import by.russianzak.model.RoadSurfaceEntity;
 import by.russianzak.model.RoadSurfaceEntity.TypeOfRoadSurface;
 import by.russianzak.repository.impl.RoadSurfaceEntityRepositoryImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,9 @@ public class RoadSurfaceEntityRepositoryImplTest {
   @Container
   public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
 
-  @BeforeEach
-  public void setUp() {
-    roadSurfaceEntityRepository.deleteAll();
+  @BeforeAll
+  static void beforeAll() {
+    postgreSQLContainer.start();
   }
 
   @DynamicPropertySource
@@ -58,6 +59,18 @@ public class RoadSurfaceEntityRepositoryImplTest {
     assertEquals(TypeOfRoadSurface.ASPHALT, TypeOfRoadSurface.fromValue(savedRoadSurfaceEntity.getType()));
     assertEquals("Smooth asphalt road", savedRoadSurfaceEntity.getDescription());
     assertEquals(0.8, savedRoadSurfaceEntity.getFrictionCoefficient());
+  }
+
+  @Test
+  void testDelete() {
+    RoadSurfaceEntity roadSurfaceEntity = new RoadSurfaceEntity();
+    roadSurfaceEntity.setType(TypeOfRoadSurface.ASPHALT);
+    roadSurfaceEntity.setDescription("Smooth asphalt road");
+    roadSurfaceEntity.setFrictionCoefficient(0.8);
+    roadSurfaceEntityRepository.save(roadSurfaceEntity);
+
+    roadSurfaceEntityRepository.delete(roadSurfaceEntity);
+    assertFalse(roadSurfaceEntityRepository.findById(roadSurfaceEntity.getId()).isPresent());
   }
 
   @Test

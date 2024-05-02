@@ -35,7 +35,7 @@ class HouseEntityControllerTest {
 
   @BeforeEach
   public void setup() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     mockResponseHouse = new ResponseHouseEntityDto(1L, "123", new Date(), 2L, TypeOfBuilding.GARAGE.getValue(),
         new ResponseStreetSlimEntityDto(1L, "Main Street", 12345L));
     mockRequestHouse = new RequestHouseEntityDto("123", new Date(), 2L, TypeOfBuilding.GARAGE.getValue(),

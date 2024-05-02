@@ -3,6 +3,7 @@ package by.russianzak.repository;
 import by.russianzak.config.DatabaseConfig;
 import by.russianzak.model.StreetEntity;
 import by.russianzak.repository.impl.StreetEntityRepositoryImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,9 @@ public class StreetEntityRepositoryImplTest {
   @Container
   public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
 
-  @BeforeEach
-  public void setUp() {
-    streetEntityRepository.deleteAll();
+  @BeforeAll
+  static void beforeAll() {
+    postgreSQLContainer.start();
   }
 
   @DynamicPropertySource
@@ -55,6 +56,17 @@ public class StreetEntityRepositoryImplTest {
 
     assertEquals("Main Street", savedStreetEntity.getName());
     assertEquals(12345L, savedStreetEntity.getPostalCode());
+  }
+
+  @Test
+  void testDelete() {
+    StreetEntity streetEntity = new StreetEntity();
+    streetEntity.setName("Main Street");
+    streetEntity.setPostalCode(12345L);
+    streetEntityRepository.save(streetEntity);
+
+    streetEntityRepository.delete(streetEntity);
+    assertFalse(streetEntityRepository.findById(streetEntity.getId()).isPresent());
   }
 
   @Test

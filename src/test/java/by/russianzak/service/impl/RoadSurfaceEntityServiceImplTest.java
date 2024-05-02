@@ -6,6 +6,7 @@ import by.russianzak.model.StreetEntity;
 import by.russianzak.repository.jpa.RoadSurfaceEntityRepositoryJpa;
 import by.russianzak.repository.jpa.StreetEntityRepositoryJpa;
 import by.russianzak.service.dto.RequestRoadSurfaceEntityDto;
+import by.russianzak.service.dto.ResponseHouseEntityDto;
 import by.russianzak.service.dto.ResponseRoadSurfaceEntityDto;
 import by.russianzak.service.dto.slim.RequestStreetSlimEntityDto;
 import by.russianzak.service.dto.slim.ResponseStreetSlimEntityDto;
@@ -46,7 +47,7 @@ class RoadSurfaceEntityServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     roadSurfaceEntity = new RoadSurfaceEntity();
     roadSurfaceEntity.setId(1L);
@@ -65,18 +66,22 @@ class RoadSurfaceEntityServiceImplTest {
     savedRoadSurfaceEntity.setType(TypeOfRoadSurface.GRAVEL);
     savedRoadSurfaceEntity.setFrictionCoefficient(0.6);
     savedRoadSurfaceEntity.setStreets(Collections.emptySet());
+
+    StreetEntity streetEntity = StreetEntity.builder().setId(1L).setName("First").setPostalCode(777L).setRoadSurfaces(Collections.singleton(savedRoadSurfaceEntity)).build();
+    savedRoadSurfaceEntity.setStreets(Collections.singleton(streetEntity));
     when(roadSurfaceDtoMapper.map(request)).thenReturn(savedRoadSurfaceEntity);
     when(roadSurfaceDtoMapper.map(savedRoadSurfaceEntity)).thenReturn(new ResponseRoadSurfaceEntityDto(savedRoadSurfaceEntity.getId(), savedRoadSurfaceEntity.getType(), savedRoadSurfaceEntity.getDescription(),
         savedRoadSurfaceEntity.getFrictionCoefficient(), new HashSet<>()));
     when(roadSurfaceRepository.existsByType(RoadSurfaceEntity.TypeOfRoadSurface.GRAVEL)).thenReturn(false);
     when(roadSurfaceRepository.save(any(RoadSurfaceEntity.class))).thenReturn(savedRoadSurfaceEntity);
-
+    when(streetRepository.findByNameAndPostalCode(streetEntity.getName(), streetEntity.getPostalCode())).thenReturn(Optional.of(streetEntity));
     ResponseRoadSurfaceEntityDto savedDto = roadSurfaceService.save(request);
 
     assertNotNull(savedDto);
     assertEquals(savedRoadSurfaceEntity.getId(), savedDto.getId());
     assertEquals(savedRoadSurfaceEntity.getType(), savedDto.getType());
     assertEquals(savedRoadSurfaceEntity.getFrictionCoefficient(), savedDto.getFrictionCoefficient());
+
   }
 
   @Test
@@ -166,6 +171,27 @@ class RoadSurfaceEntityServiceImplTest {
     when(roadSurfaceRepository.findById(2L)).thenReturn(Optional.empty());
 
     assertThrows(ResponseStatusException.class, () -> roadSurfaceService.update(requestDto, 2L));
+  }
+
+  @Test
+  void getById_ExistingId_Success() {
+    when(roadSurfaceRepository.findById(1L)).thenReturn(Optional.of(roadSurfaceEntity));
+
+    ResponseRoadSurfaceEntityDto responseDto = new ResponseRoadSurfaceEntityDto();
+    responseDto.setId(1L);
+    responseDto.setType("ASPHALT");
+    responseDto.setFrictionCoefficient(0.8);
+
+    when(roadSurfaceDtoMapper.map(roadSurfaceEntity)).thenReturn(responseDto);
+
+    ResponseRoadSurfaceEntityDto foundDto = roadSurfaceService.getById(1L);
+
+    assertEquals(responseDto, foundDto);
+  }
+
+  @Test
+  void getById_NonExistingId_BadRequestException() {
+    assertThrows(ResponseStatusException.class, () -> roadSurfaceService.getById(2L));
   }
 
   @Test

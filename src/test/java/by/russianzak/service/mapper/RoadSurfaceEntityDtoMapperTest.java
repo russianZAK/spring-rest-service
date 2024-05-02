@@ -7,6 +7,7 @@ import by.russianzak.service.dto.ResponseRoadSurfaceEntityDto;
 import by.russianzak.service.dto.slim.RequestStreetSlimEntityDto;
 import by.russianzak.service.dto.slim.ResponseStreetSlimEntityDto;
 import by.russianzak.service.mapper.RoadSurfaceEntityDtoMapper;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -15,6 +16,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RoadSurfaceEntityDtoMapperTest {
 
@@ -40,15 +42,22 @@ class RoadSurfaceEntityDtoMapperTest {
   }
 
   @Test
+  void testMappingNullRequestDtoToEntity() {
+    RoadSurfaceEntity entity = mapper.map((RequestRoadSurfaceEntityDto) null);
+
+    assertNull(entity);
+  }
+
+  @Test
   void testMappingEntityToResponseDto() {
     RoadSurfaceEntity entity = RoadSurfaceEntity.builder()
         .setId(1L)
         .setType(RoadSurfaceEntity.TypeOfRoadSurface.ASPHALT)
         .setDescription("Smooth asphalt surface")
         .setFrictionCoefficient(0.9)
-        .setStreets(new HashSet<>())
         .build();
-
+    StreetEntity streetEntity = StreetEntity.builder().setName("First").setPostalCode(777L).setId(2L).setRoadSurfaces(Collections.singleton(entity)).build();
+    entity.setStreets(Collections.singleton(streetEntity));
     ResponseRoadSurfaceEntityDto responseDto = mapper.map(entity);
 
     assertNotNull(responseDto);
@@ -56,6 +65,13 @@ class RoadSurfaceEntityDtoMapperTest {
     assertEquals("ASPHALT", responseDto.getType());
     assertEquals("Smooth asphalt surface", responseDto.getDescription());
     assertEquals(0.9, responseDto.getFrictionCoefficient());
-    assertEquals(0, responseDto.getStreets().size());
+    assertEquals(1, responseDto.getStreets().size());
+  }
+
+  @Test
+  void testMappingNullEntityToResponseDto() {
+    ResponseRoadSurfaceEntityDto responseDto = mapper.map((RoadSurfaceEntity) null);
+
+    assertNull(responseDto);
   }
 }
